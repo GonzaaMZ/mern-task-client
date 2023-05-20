@@ -1,8 +1,29 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import AlertaContext from "../../context/alertas/alertasContext";
+import AuthContext from "../../context/autenticacion/authContext";
 
 
-const Registro = () => {
+const Registro = (props) => {
+
+    const alertaContext = useContext(AlertaContext);
+
+    const {alerta, mostrarAlerta} = alertaContext;
+
+    const authContext = useContext(AuthContext);
+    const { mensaje, autenticado ,registrarUsuario} = authContext; 
+
+    let navigate = useNavigate();
+
+    useEffect(() => {
+        if(autenticado){
+            navigate('/proyectos')
+        }
+
+        if(mensaje){
+            mostrarAlerta(mensaje.msg, mensaje.categoria);
+        }
+    }, [mensaje, autenticado, props.history])
 
     const [usuario, setUsuario] = useState({
         nombre: '',
@@ -24,15 +45,34 @@ const Registro = () => {
         e.preventDefault()
 
         //Validacion de campos
+        if(nombre.trim() === '' || email.trim() === '' || password.trim() === '' || repetirPassword.trim() === ''){
+            mostrarAlerta('Todos los campos son obligatorios', 'alerta-error')
+            return
+        }
 
         //Validar password, longitud y confirmacion
+        if(password.length < 6){
+            mostrarAlerta('El password debe tener mas de 6 caracteres', 'alerta-error');
+            return
+        }
+
+        if(password !== repetirPassword){
+            mostrarAlerta('El password debe coincidir', 'alerta-error');
+            return
+        }
 
         //Pasarlo al action
+        registrarUsuario({
+            nombre,
+            email,
+            password
+        })
 
     }
 
     return ( 
         <div className="form-usuario">
+            {alerta ? (<div className={`alerta ${alerta.categoria}`}>{alerta.msg}</div>) : null}
             <div className="contenedor-form sombra-dark">
                 <h1>Obtiene una Cuenta</h1>
                 <form

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import proyectoContext from "../../context/proyectos/proyectoContext";
 import tareaContext from "../../context/tareas/tareaContext";
 
@@ -10,7 +10,18 @@ const FormTarea = () => {
   const { proyecto } = proyectosContext;
 
   const tareasContext = useContext(tareaContext);
-  const { agregarTarea } = tareasContext;
+  const { tareaseleccionada, agregarTarea, validarTarea, errortarea, obtenerTareas, actualizarTarea, limpiarTarea } = tareasContext;
+
+  // Effect que detecta si hay una tarea seleccionada
+  useEffect(() => {
+    if (tareaseleccionada !== null) {
+      setTarea(tareaseleccionada)
+    } else {
+      setTarea({
+        nombre: ''
+      })
+    }
+  }, [tareaseleccionada])
 
   const [tarea, setTarea] = useState({
     nombre: ''
@@ -35,6 +46,32 @@ const FormTarea = () => {
   const onSubmit = e => {
     e.preventDefault();
 
+    //Validacion
+    if (nombre.trim() === '') {
+      validarTarea();
+      return
+    }
+
+    // Verificacion si es edicion o nueva tarea
+    if (tareaseleccionada === null) {
+      //Tarea nueva
+      // Agregar tarea al state
+      tarea.proyectoId = proyectoActual.id;
+      tarea.estado = false
+      agregarTarea(tarea);
+    } else {
+      //Actualizar tarea
+      actualizarTarea(tarea);
+      limpiarTarea();
+    }
+
+    //
+    obtenerTareas(proyectoActual.id)
+
+    // reiniciar el formulario
+    setTarea({
+      nombre: ''
+    })
 
 
   }
@@ -55,11 +92,12 @@ const FormTarea = () => {
         <div className="contenedor-input">
           <input
             type="submit"
-            value="Agregar Tarea"
+            value={tareaseleccionada ? 'Editar Tarea' : 'Agregar Tarea'}
             className="btn btn-primario btn-submit btn-block"
           />
         </div>
       </form>
+      {errortarea ? <p className="mensaje error">El nombre de la tarea es obligatorio</p> : null}
     </div>
   );
 };

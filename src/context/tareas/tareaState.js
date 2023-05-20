@@ -2,26 +2,35 @@ import React, { useReducer } from "react";
 
 import TareaContext from "./tareaContext";
 import TareaReducer from "./tareaReducer";
+import { v4 as uuidv4 } from 'uuid';
 
 import {
      TAREAS_PROYECTO,
-     AGREGAR_TAREA
+     AGREGAR_TAREA,
+     VALIDAR_TAREA,
+     ELIMINAR_TAREA,
+     ESTADO_TAREA,
+     TAREA_ACTUAL,
+     ACTUALIZAR_TAREA,
+     LIMPIAR_TAREA
 } from "../../types";
 
 
 const TareaState = props => {
     const initialState = {
         tareas: [
-        { nombre: 'Elegir Lenguaje', estado: true, proyectoId: 1},
-        { nombre: 'Diseñar la tienda', estado: false, proyectoId: 2 },
-        { nombre: 'Elegir pasarela de pago', estado: true,  proyectoId: 3 },
-        { nombre: 'Elegir hosting', estado: false,  proyectoId: 4 },
-        { nombre: 'Elegir Lenguaje', estado: true, proyectoId: 4},
-        { nombre: 'Diseñar la tienda', estado: false, proyectoId: 1 },
-        { nombre: 'Elegir pasarela de pago', estado: true,  proyectoId: 2 },
-        { nombre: 'Elegir hosting', estado: false,  proyectoId: 3 }
+        { id: 1, nombre: 'Elegir Lenguaje', estado: true, proyectoId: 1},
+        { id: 2, nombre: 'Diseñar la tienda', estado: false, proyectoId: 2 },
+        { id: 3, nombre: 'Elegir pasarela de pago', estado: true,  proyectoId: 3 },
+        { id: 4, nombre: 'Elegir hosting', estado: false,  proyectoId: 4 },
+        { id: 5, nombre: 'Elegir Lenguaje', estado: true, proyectoId: 4},
+        { id: 6, nombre: 'Diseñar la tienda', estado: false, proyectoId: 1 },
+        { id: 7, nombre: 'Elegir pasarela de pago', estado: true,  proyectoId: 2 },
+        { id: 8, nombre: 'Elegir hosting', estado: false,  proyectoId: 3 }
     ],
-    tareasproyecto: null
+    tareasproyecto: null,
+    errortarea: false,
+    tareaseleccionada: null
     }
 
     // Crear dispatch y state
@@ -40,9 +49,54 @@ const TareaState = props => {
 
     // Agregar una tarea al proyecto que seleccionamos
     const agregarTarea = tarea => {
+        tarea.id = uuidv4();
         dispatch({
             type: AGREGAR_TAREA,
             payload: tarea
+        })
+    }
+
+    const validarTarea = () => {
+        dispatch({
+            type: VALIDAR_TAREA
+        })
+    }
+
+    // Eliminar tarea por ID
+    const eliminarTarea = id => {
+        dispatch({
+            type: ELIMINAR_TAREA,
+            payload: id
+        })
+    }
+
+    //Cambia el estado de las tarea
+    const cambiarEstadoTarea = tarea => {
+        dispatch({
+            type: ESTADO_TAREA,
+            payload: tarea
+        })
+    }
+
+    // Extrae una tarea para editar
+    const guardarTareaActual = tarea => {
+        dispatch({
+            type: TAREA_ACTUAL,
+            payload: tarea
+        })
+    }
+    // edita una tarea
+    const actualizarTarea = tarea => {
+        dispatch({
+            type: ACTUALIZAR_TAREA,
+            payload: tarea
+        })
+    }
+
+    //Elimina la tareaseleccionada
+    const limpiarTarea = () => {
+        dispatch({
+            type: LIMPIAR_TAREA
         })
     }
 
@@ -51,8 +105,16 @@ const TareaState = props => {
         value={{
             tareas: state.tareas,
             tareasproyecto: state.tareasproyecto,
+            errortarea: state.errortarea,
+            tareaseleccionada: state.tareaseleccionada,
             obtenerTareas,
-            agregarTarea
+            agregarTarea,
+            validarTarea,
+            eliminarTarea,
+            cambiarEstadoTarea,
+            guardarTareaActual,
+            actualizarTarea,
+            limpiarTarea
         }}
         >
             {props.children}
