@@ -11,6 +11,7 @@ import AuthReducer from "./authReducer"
 import AuthContext from "./authContext"
 import clienteAxios from "../../config/axios"
 import tokenAuth from "../../config/tokenAuth"
+import axios from "axios"
 
 const AuthState = props => {
 
@@ -35,8 +36,10 @@ const AuthState = props => {
                 type: REGISTRO_EXITOSO,
                 payload: respuesta.data
             })
+            setTimeout(() => {
+                usuarioAutenticado()
+            }, '3000')
         
-            await usuarioAutenticado();
         } catch (error) {
             // console.log(error.response.data.msg);
             console.log('REGISTRO ERROR');
@@ -64,7 +67,11 @@ const AuthState = props => {
         }
 
         try {
-            const respuesta = await clienteAxios.get('/api/auth')
+            const respuesta = await clienteAxios.get('/api/auth');
+            dispatch({
+                type: OBTENER_USUARIO,
+                payload: respuesta.data.usuario
+            })
             console.log(respuesta.data);
         } catch (error) {
             console.log(error.response);
@@ -75,6 +82,28 @@ const AuthState = props => {
 
     }
 
+// Inicio de Sesion
+const iniciarSesion = async datos => {
+    try {
+        const respuesta = await clienteAxios.post('/api/auth', datos)
+        console.log(respuesta);
+        // dispatch({
+        //     type: LOGIN_EXITOSO,
+        //     payload: respuesta.data
+        // })
+    } catch (error) {
+        console.log(error.response.data.msg);
+        const alerta = {
+            msg: error.response.data.msg,
+            categoria: 'alerta-error'
+        }
+        dispatch({
+            type: LOGIN_ERROR,
+            payload: alerta
+        })
+    }
+}
+
     return (
         <AuthContext.Provider
             value={{
@@ -82,7 +111,8 @@ const AuthState = props => {
                 autenticado: state.autenticado,
                 usuario: state.usuario,
                 mensaje: state.mensaje,
-                registrarUsuario
+                registrarUsuario,
+                iniciarSesion
             }}
         >
             {props.children}
