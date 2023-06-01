@@ -12,11 +12,13 @@ import {
 export default (state, action) => {
     switch(action.type) {
         case REGISTRO_EXITOSO:
-            localStorage.setItem('token', action.payload.token)
+            localStorage.setItem('token', action.payload.token);
+            console.log(action.payload.token);
+            console.log('Token almacenad en el reducer');
             return {
                 ...state,
                 autenticado: true,
-                mensaje: null
+                mensaje: null,  
             }
         case LOGIN_ERROR: 
         case REGISTRO_ERROR: 
