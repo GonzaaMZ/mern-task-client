@@ -1,9 +1,20 @@
+import { useContext, useEffect } from "react";
+import AuthContext from "../../context/autenticacion/authContext";
 import Barra from "../layouts/Barra";
 import Sidebar from "../layouts/Sidebar";
 import FormTarea from "../tareas/FormTarea";
 import ListadoTareas from "../tareas/ListadoTareas";
 
 const Proyectos = () => {
+
+   const authContext = useContext(AuthContext);
+
+   const {usuarioAutenticado} = authContext;
+
+    useEffect(() => {
+        usuarioAutenticado()
+    },[]);
+
     return ( 
         <div className="contenedor-app">
 

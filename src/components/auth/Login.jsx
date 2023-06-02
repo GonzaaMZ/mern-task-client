@@ -1,15 +1,15 @@
-import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import AlertaContext from "../../context/alertas/alertasContext";
 import AuthContext from "../../context/autenticacion/authContext";
 
 
-const Login = () => {
+const Login = (props) => {
 
     const [usuario, setUsuario] = useState({
         email: '',
         password: ''
-    })
+    }) 
 
     const alertaContext = useContext(AlertaContext);
 
@@ -17,6 +17,18 @@ const Login = () => {
 
     const authContext = useContext(AuthContext);
     const { mensaje, autenticado ,iniciarSesion} = authContext; 
+
+    let navigate = useNavigate();
+
+    useEffect(() => {
+        if(autenticado){
+            navigate('/proyectos')
+        }
+
+        if(mensaje){
+            mostrarAlerta(mensaje.msg, mensaje.categoria);
+        }
+    }, [mensaje, autenticado])
 
     const {email, password} = usuario
 
