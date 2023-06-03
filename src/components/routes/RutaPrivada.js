@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import AuthContext from "../../context/autenticacion/authContext";
-import { Route, Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 
 const ProtectedRoute = ({ element: Element, ...rest }) => {
@@ -10,6 +10,7 @@ const ProtectedRoute = ({ element: Element, ...rest }) => {
 
     useEffect(() => {
         usuarioAutenticado()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     if(!autenticado && !cargando){

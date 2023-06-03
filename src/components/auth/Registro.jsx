@@ -23,6 +23,7 @@ const Registro = (props) => {
         if(mensaje){
             mostrarAlerta(mensaje.msg, mensaje.categoria);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mensaje, autenticado])
 
     const [usuario, setUsuario] = useState({

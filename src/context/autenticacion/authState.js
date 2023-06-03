@@ -11,7 +11,6 @@ import AuthReducer from "./authReducer"
 import AuthContext from "./authContext"
 import clienteAxios from "../../config/axios"
 import tokenAuth from "../../config/tokenAuth"
-import axios from "axios"
 
 const AuthState = props => {
 
@@ -31,7 +30,7 @@ const AuthState = props => {
     const registrarUsuario = async datos => {
         try {
             const respuesta = await clienteAxios.post('/api/usuarios', datos);
-            console.log(respuesta.data);
+            // console.log(respuesta.data);
 
             dispatch({
                 type: REGISTRO_EXITOSO,
@@ -40,10 +39,8 @@ const AuthState = props => {
             setTimeout(() => {
                 usuarioAutenticado()
             }, '3000')
-        
+
         } catch (error) {
-            // console.log(error.response.data.msg);
-            console.log('REGISTRO ERROR');
             const alerta = {
                 msg: error.response.data.msg,
                 categoria: 'alerta-error'
@@ -57,13 +54,9 @@ const AuthState = props => {
 
     // fn para obtener el usuario autenticado
     const usuarioAutenticado = async () => {
-
-        console.log('entro a usuarioAutenticado..');
         const token = localStorage.getItem('token');
-        console.log('token: ', token);
 
-        if(token){
-            console.log('entro al tokenAuth');
+        if (token) {
             tokenAuth(token);
         }
 
@@ -72,10 +65,8 @@ const AuthState = props => {
             dispatch({
                 type: OBTENER_USUARIO,
                 payload: respuesta.data.usuario
-            })
-            console.log(respuesta.data);
+            })    
         } catch (error) {
-            console.log(error.response);
             dispatch({
                 type: LOGIN_ERROR
             })
@@ -83,37 +74,36 @@ const AuthState = props => {
 
     }
 
-// Inicio de Sesion
-const iniciarSesion = async datos => {
-    try {
-        const respuesta = await clienteAxios.post('/api/auth', datos)
-        // console.log(respuesta);
-        dispatch({
-            type: LOGIN_EXITOSO,
-            payload: respuesta.data
-        })
+    // Inicio de Sesion
+    const iniciarSesion = async datos => {
+        try {
+            const respuesta = await clienteAxios.post('/api/auth', datos)
+            // console.log(respuesta);
+            dispatch({
+                type: LOGIN_EXITOSO,
+                payload: respuesta.data
+            })
 
-        setTimeout(() => {
-            usuarioAutenticado()
-        }, '2000')
-    } catch (error) {
-        console.log(error.response.data.msg);
-        const alerta = {
-            msg: error.response.data.msg,
-            categoria: 'alerta-error'
+            setTimeout(() => {
+                usuarioAutenticado()
+            }, '2000')
+        } catch (error) {
+            const alerta = {
+                msg: error.response.data.msg,
+                categoria: 'alerta-error'
+            }
+            dispatch({
+                type: LOGIN_ERROR,
+                payload: alerta
+            })
         }
+    }
+
+    const cerrarSesion = async () => {
         dispatch({
-            type: LOGIN_ERROR,
-            payload: alerta
+            type: CERRAR_SESION
         })
     }
-}
-
-const cerrarSesion = async () => {
-    dispatch({
-        type: CERRAR_SESION
-    })
-}
 
     return (
         <AuthContext.Provider
